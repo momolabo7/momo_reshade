@@ -12,5 +12,7 @@ Multiplying red by 0 will remove all red.
 Multiplying red by 2 will double all red values.
 Since max value of a component is 255, you can multiply red by 255 to make EVERYTHING red EXCEPT for things with 0 red (because 0 * 255 is 0!)
 
-Simple math!
+Is simple math!
+
+Simple use case would be to multiply everything by 0.5 to make  everything darker and 1.5 to make everything brighter.
 
