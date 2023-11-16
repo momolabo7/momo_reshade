@@ -23,7 +23,7 @@ uniform float input_saturation_multiplier <
   ui_max = 5.0;
 > = float(1.0);
 
-uniform float input_lightness_add <
+uniform float input_lightness_multipler <
   ui_type = "slider";
   ui_label = "Add Lightness";
   ui_tooltip = "Adds 'Lightness' to the scene. Lightness is generally speaking the amount of black and white in the color. Negative values add more 'black' and positive values add more 'white' to the scene.";
@@ -150,7 +150,18 @@ float3 moom_hsl(float4 vpos : SV_Position, float2 texcoord : TexCoord) : SV_Targ
 
   hsl[0] = wrap(hsl[0] +  input_hue_offset/360.0);
   hsl[1] = max(min(hsl[1] * input_saturation_multiplier, 1.0), 0.0);
-  hsl[2] = max(min(hsl[2] + input_lightness_add, 1.0), 0.0);
+  
+  // NOTE: Okay this was a bit tricky to figure out but I THINK
+  // what image editors do is that they ADD a PERCENTAGE of 'white'
+  // ...NOT adding a flat percentage.
+  //
+  // It's NOT:
+  //   lightness += input
+  // It's actually:
+  //   lightness += 1.0 * input 
+  // where input is a valid from -1 to 1.
+  //      
+  hsl[2] = max(min(hsl[2] + (1.0 * input_lightness_multipler), 1.0), 0.0);
 
   float3 ret = hsl_to_rgb(hsl);
 
