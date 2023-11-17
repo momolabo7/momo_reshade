@@ -16,3 +16,8 @@ Is simple math!
 
 Simple use case would be to multiply everything by 0.5 to make  everything darker and 1.5 to make everything brighter.
 
+# momo_hsl
+
+This shader allows you to adjust the hue/saturation/lightness, similar from photo editting tools like Photoshop.
+
+
