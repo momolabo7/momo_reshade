@@ -21,3 +21,7 @@ Simple use case would be to multiply everything by 0.5 to make  everything darke
 This shader allows you to adjust the hue/saturation/lightness, similar from photo editting tools like Photoshop.
 
 
+# momo_texture_overlay
+
+This shader allows you place a texture over the screen! You can resize and move the texture. 
+NOTE: I'm currently working on getting rotation to work.
