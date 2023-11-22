@@ -1,5 +1,4 @@
 // TODO
-//   [] Rotation
 //   [] Blending
 
 #include "ReShade.fxh"
@@ -9,8 +8,8 @@ uniform float input_x <
   ui_label = "X";
   ui_tooltip = "X position of the overlay";
   ui_step = 0.01;
-  ui_min = 0;
-  ui_max = BUFFER_WIDTH;
+  ui_min = -BUFFER_HEIGHT/2;
+  ui_max = BUFFER_WIDTH + BUFFER_WIDTH/2;
 > = float(BUFFER_WIDTH/2);
 
 uniform float input_y <
@@ -18,8 +17,8 @@ uniform float input_y <
   ui_label = "Y";
   ui_tooltip = "Y position of the overlay";
   ui_step = 0.01;
-  ui_min = 0;
-  ui_max = BUFFER_HEIGHT;
+  ui_min = -BUFFER_HEIGHT/2;
+  ui_max = BUFFER_HEIGHT + BUFFER_HEIGHT/2;
 > = float(BUFFER_HEIGHT/2);
 
 uniform float input_width <
@@ -40,14 +39,14 @@ uniform float input_height <
   ui_max = BUFFER_HEIGHT;
 > = float(BUFFER_HEIGHT/2);
 
-// uniform float input_rotation <
-//   ui_type = "slider";
-//   ui_label = "Rotation";
-//   ui_tooltip = "";
-//   ui_step = 0.01;
-//   ui_min = 0;
-//   ui_max = 360;
-// > = float(0.0);
+uniform float input_rotation <
+  ui_type = "slider";
+  ui_label = "Rotation";
+  ui_tooltip = "";
+  ui_step = 0.01;
+  ui_min = 0;
+  ui_max = 360;
+> = float(90.0);
 
 texture2D overlay_texture < source = "momo_texture_overlay.png"; > 
 { 
@@ -98,31 +97,54 @@ float3x3 make_scale (in float x, in float y) {
   );
 }
 
-#define AX float(BUFFER_WIDTH * 1/BUFFER_HEIGHT)
-#define AY float(BUFFER_HEIGHT* 1/BUFFER_WIDTH)
+//#define overlay_aspect_x float(1.0 - input_width/input_height)
+//#define overlay_aspect_y float(1.0 - input_height/input_width)
 
-float3x3 make_rotation (in float rad) {
+#define overlay_aspect_x float(1.0 - (BUFFER_WIDTH) * (1.0/BUFFER_HEIGHT))
+#define overlay_aspect_y float(1.0 - (BUFFER_HEIGHT) * (1.0/BUFFER_WIDTH))
+
+#define overlay_scale_x  float(input_width / BUFFER_WIDTH) 
+#define overlay_scale_y  float(input_height / BUFFER_HEIGHT) 
+#define overlay_pos_x    float(input_x/BUFFER_WIDTH)
+#define overlay_pos_y    float(input_y/BUFFER_HEIGHT)
+
+
+float3x3 make_rotation(in float rad) {
+
   float rot = rad * (3.1415926 / 180.0);
+
   return float3x3 (
-      cos(rot),  sin(rot), 0,
-      -sin(rot), cos(rot), 0,
-      0,   0,   1
+    cos(rot), (overlay_aspect_x* sin(rot))/(overlay_aspect_y), 0,
+    (overlay_aspect_y*-sin(rot))/(overlay_aspect_x), cos(rot),0,
+    0,0,1
   );
+
+/*
+  // Original algorithm
+  return float3x3 (
+    (overlay_aspect_x* cos(rot))/(overlay_aspect_x), 
+    (overlay_aspect_x* sin(rot))/(overlay_aspect_y), 0,
+    (overlay_aspect_y*-sin(rot))/(overlay_aspect_x), 
+    (overlay_aspect_y* cos(rot))/(overlay_aspect_y),0,
+    0,0,1
+  );
+*/
+
 }
+
 
 float3 momo_texture_overlay(float4 vpos : SV_Position, float2 texcoord : TexCoord) : SV_Target
 { 
   float3x3 o = make_translation(-0.5, -0.5);
-  //float3x3 r = make_rotation(input_rotation);
-  float3x3 s = make_scale(input_width/BUFFER_WIDTH,input_height/BUFFER_HEIGHT);
-  float3x3 t = make_translation(input_x/BUFFER_WIDTH, input_y/BUFFER_HEIGHT);
+  float3x3 r = make_rotation(input_rotation);
+  float3x3 s = make_scale(overlay_scale_x, overlay_scale_y);
+  float3x3 t = make_translation(overlay_pos_x, overlay_pos_y);
 
-  float3 uv = float3(texcoord.x, texcoord.y, 1);
   // NOTE(momo): REMEMBER THAT WE ARE DOING COLUMN MAJOR AHHHH MY ROW_MAJOR BRAIN SOBS
-  //float3 overlay_texcoord = mul(mul(mul(mul(uv, t), r), s), o);
-  float3 overlay_texcoord = mul(mul(mul(uv, t), s), o);
+  float3 uv = float3(texcoord.x, texcoord.y, 1);
+  float3 overlay_texcoord = mul(mul(mul(mul(uv, t), r), s), o);
 
-  //float3 overlay_texcoord = mul(mul(float3(texcoord.x, texcoord.y, 1), o), s);
+
 
 
   float4 overlay = tex2D(overlay_sampler, overlay_texcoord.xy);
