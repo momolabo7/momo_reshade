@@ -23,7 +23,6 @@ This shader allows you to adjust the hue/saturation/lightness, similar from phot
 
 # momo_texture_overlay
 
-This shader allows you place a texture over the screen! You can resize and move the texture. 
+This shader allows you place a texture over the screen! You can resize, move and rotate the texture. 
 The texture it uses is under `reshade-shaders/Textures/momo_texture_overlay.png`. Simply replace it with your own texture!
 
-PS: I'm currently working on getting rotation to work.
