@@ -3,6 +3,11 @@
 
 #include "ReShade.fxh"
 
+#define overlay_scale_x  float(input_width / BUFFER_WIDTH) 
+#define overlay_scale_y  float(input_height / BUFFER_HEIGHT) 
+#define overlay_pos_x    float(input_x/BUFFER_WIDTH)
+#define overlay_pos_y    float(input_y/BUFFER_HEIGHT)
+
 uniform float input_x <
   ui_type = "slider";
   ui_label = "X";
@@ -88,7 +93,6 @@ float3x3 make_translation (float x, float y) {
     -x, -y, 1
   );
 }
-
 float3x3 make_scale (in float x, in float y) {
   return float3x3 (
       1/x, 0,   0,
@@ -97,38 +101,23 @@ float3x3 make_scale (in float x, in float y) {
   );
 }
 
-//#define overlay_aspect_x float(1.0 - input_width/input_height)
-//#define overlay_aspect_y float(1.0 - input_height/input_width)
-
-#define overlay_aspect_x float(1.0 - (BUFFER_WIDTH) * (1.0/BUFFER_HEIGHT))
-#define overlay_aspect_y float(1.0 - (BUFFER_HEIGHT) * (1.0/BUFFER_WIDTH))
-
-#define overlay_scale_x  float(input_width / BUFFER_WIDTH) 
-#define overlay_scale_y  float(input_height / BUFFER_HEIGHT) 
-#define overlay_pos_x    float(input_x/BUFFER_WIDTH)
-#define overlay_pos_y    float(input_y/BUFFER_HEIGHT)
-
+float3x3 make_translation2 (float x, float y) {
+  return float3x3 (
+    1, 0, -x,
+    0, 1, -y,
+    0, 0, 1
+  );
+}
 
 float3x3 make_rotation(in float rad) {
 
   float rot = rad * (3.1415926 / 180.0);
 
   return float3x3 (
-    cos(rot), (overlay_aspect_x* sin(rot))/(overlay_aspect_y), 0,
-    (overlay_aspect_y*-sin(rot))/(overlay_aspect_x), cos(rot),0,
+    cos(rot), (sin(rot)*BUFFER_WIDTH)/BUFFER_HEIGHT, 0,
+    (-sin(rot)*BUFFER_HEIGHT)/BUFFER_WIDTH, cos(rot),0,
     0,0,1
   );
-
-/*
-  // Original algorithm
-  return float3x3 (
-    (overlay_aspect_x* cos(rot))/(overlay_aspect_x), 
-    (overlay_aspect_x* sin(rot))/(overlay_aspect_y), 0,
-    (overlay_aspect_y*-sin(rot))/(overlay_aspect_x), 
-    (overlay_aspect_y* cos(rot))/(overlay_aspect_y),0,
-    0,0,1
-  );
-*/
 
 }
 
@@ -140,10 +129,8 @@ float3 momo_texture_overlay(float4 vpos : SV_Position, float2 texcoord : TexCoor
   float3x3 s = make_scale(overlay_scale_x, overlay_scale_y);
   float3x3 t = make_translation(overlay_pos_x, overlay_pos_y);
 
-  // NOTE(momo): REMEMBER THAT WE ARE DOING COLUMN MAJOR AHHHH MY ROW_MAJOR BRAIN SOBS
   float3 uv = float3(texcoord.x, texcoord.y, 1);
   float3 overlay_texcoord = mul(mul(mul(mul(uv, t), r), s), o);
-
 
 
 
