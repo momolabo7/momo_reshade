@@ -62,8 +62,8 @@ uniform float fLUT_AmountLuma <
 
 
 
-texture texMultiLUT < source = _SOURCE_MULTILUT_FILE; > { Width = _SOURCE_MULTILUT_TILE_SIZE * _SOURCE_MULTILUT_TILE_AMOUNT; Height = _SOURCE_MULTILUT_TILE_SIZE * _SOURCE_MULTILUT_AMOUNT; Format = RGBA8; };
-sampler SamplerMultiLUT { Texture = texMultiLUT; };
+texture textMultiLutYomi < source = _SOURCE_MULTILUT_FILE; > { Width = _SOURCE_MULTILUT_TILE_SIZE * _SOURCE_MULTILUT_TILE_AMOUNT; Height = _SOURCE_MULTILUT_TILE_SIZE * _SOURCE_MULTILUT_AMOUNT; Format = RGBA8; };
+sampler SamplerMultiLUT { Texture = textMultiLutYomi; };
 
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
