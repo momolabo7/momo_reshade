@@ -22,6 +22,9 @@ This is my main gameplay shader. It is basically a modified Ipsusu's pastel game
 
 Credits to [Ipsusu](https://github.com/ipsusu/)
 
+![](site/momo_lala_cool.png)
+
+
 ## momo_wifi_ciel
 
 This is a modified version of [Wifi's](https://potatoworshiper.wixsite.com/jagaimo-no-sekai/wifi-presets) Ciel shader. 
