@@ -1,3 +1,6 @@
+# UPDATE READ ME
+This project is now archived and abandoned. I will be updating my fork on gposingway [here](https://github.com/momolabo7/gposingway).
+
 # What is this?
 
 This is my own set of reshade shaders and presets for FFXIV which should hopefully not conflict with other presets.
